@@ -6,7 +6,11 @@ import com.c1se62.clinic_booking.entity.DoctorRating;
 import com.c1se62.clinic_booking.entity.User;
 import org.springframework.stereotype.Service;
 
-@Service
+import java.util.List;
+
 public interface DoctorRatingService {
     DoctorRatingDTO addRating(RatingRequest ratingRequest, User user);
+    List<DoctorRatingDTO> getDoctorRatingsByDoctorId(Integer doctorId);
+    List<DoctorRatingDTO> getDoctorRatingsForCurrentDoctor(Integer userId);
+    void deleteRating(Integer ratingId);
 }

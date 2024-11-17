@@ -28,6 +28,6 @@ public class AuthController {
     @PostMapping("/login")
     AuthenticationResponse authenticate(@RequestBody @Valid LoginRequest authenticationRequest) {
         AuthenticationResponse result = authenticationServices.authenticated(authenticationRequest);
-return result;
+        return result;
     }
 }

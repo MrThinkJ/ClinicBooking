@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.print.Doc;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,4 +18,5 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     @Query("SELECT d FROM Doctor d JOIN FETCH d.department dept JOIN FETCH d.user " +
             "WHERE dept.departmentId = :departmentId")
     List<Doctor> getAllDoctorByDepartment(@Param("departmentId") Integer departmentId);
+    Optional<Doctor> findByUserUserId(Integer userId);
 }

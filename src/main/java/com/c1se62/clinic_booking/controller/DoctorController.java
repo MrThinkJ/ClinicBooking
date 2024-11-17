@@ -1,10 +1,14 @@
 package com.c1se62.clinic_booking.controller;
 
+import com.c1se62.clinic_booking.dto.request.DoctorCreatedDTO;
+import com.c1se62.clinic_booking.dto.request.DoctorUpdatedDTO;
 import com.c1se62.clinic_booking.dto.response.DoctorRatingResponse;
 import com.c1se62.clinic_booking.dto.response.DoctorResponse;
 import com.c1se62.clinic_booking.dto.response.TimeslotResponse;
 import com.c1se62.clinic_booking.service.DoctorServices.DoctorServices;
 import com.c1se62.clinic_booking.service.TimeSlotServices.TimeSlotServices;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +19,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/doctors")
+@AllArgsConstructor
 public class DoctorController {
-
-    @Autowired
-    private TimeSlotServices timeSlotServices;
-
-    @Autowired
-    private DoctorServices doctorServices;
+    TimeSlotServices timeSlotServices;
+    DoctorServices doctorServices;
 
     @GetMapping("/{doctorId}/timeslot/{date}")
     public ResponseEntity<List<TimeslotResponse>> getAvailableTimeSlots(
@@ -58,6 +59,7 @@ public class DoctorController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while fetching doctors: " + e.getMessage());
         }
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<DoctorResponse> getDoctorById(@PathVariable int id) {
         try {
@@ -67,6 +69,7 @@ public class DoctorController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+
     @GetMapping("/{id}/ratings")
     public ResponseEntity<List<DoctorRatingResponse>> getRatingsByDoctorId(@PathVariable int id) {
         List<DoctorRatingResponse> ratings = doctorServices.getRatingsByDoctorId(id);
@@ -76,4 +79,22 @@ public class DoctorController {
         return new ResponseEntity<>(ratings, HttpStatus.OK);
     }
 
+    @PostMapping("/admin/create")
+    public ResponseEntity<DoctorResponse> addDoctor(@Valid @RequestBody DoctorCreatedDTO doctorDTO) {
+        DoctorResponse doctorResponse = doctorServices.addDoctor(doctorDTO);
+        return new ResponseEntity<>(doctorResponse, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/admin/{id}")
+    public ResponseEntity<DoctorResponse> updateDoctor(@PathVariable int id,
+                                                     @Valid @RequestBody DoctorUpdatedDTO doctorDTO) {
+        DoctorResponse doctorResponse = doctorServices.updateDoctor(id, doctorDTO);
+        return ResponseEntity.ok(doctorResponse);
+    }
+
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<?> deleteDoctor(@PathVariable int id) {
+        doctorServices.deleteDoctor(id);
+        return ResponseEntity.ok(String.format("Doctor with id %s deleted successfully", id));
+    }
 }
